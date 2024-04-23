@@ -1,0 +1,29 @@
+services:
+  db:
+    container_name: db
+    image: postgres:15.3
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - 5432:5432
+  redis:
+    container_name: redis
+    image: redis:7.0
+    ports:
+      - 6379:6379
+  app:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - redis
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/solvadb
+      SPRING_DATA_REDIS_HOST: redis
+
+volumes:
+  db:
+    driver: local
